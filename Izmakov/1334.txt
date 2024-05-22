@@ -1,0 +1,68 @@
+class Solution {
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        // Создаем граф с помощью списка смежности
+        List<List<int[]>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        // Заполняем список смежности ребрами
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(new int[]{edge[1], edge[2]});
+            graph.get(edge[1]).add(new int[]{edge[0], edge[2]});
+        }
+
+        // Делаем таблицу для Алгоритма Флойда-Уоршелла 
+        int[][] floyd = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                floyd[i][j] = Integer.MAX_VALUE;
+            }
+        }
+
+        // Заполняем начальные значения для ребер в графе
+        for (int i = 0; i < edges.length; i++) {
+            int cityA = edges[i][0];
+            int cityB = edges[i][1];
+            int distance = edges[i][2];
+
+            floyd[cityA][cityB] = distance;
+            floyd[cityB][cityA] = distance;
+        }
+
+        // Устанавливаем начальное расстояние от вершины до самой себя равным 0
+        for (int i = 0; i < n; i++) {
+            floyd[i][i] = 0;
+        }
+
+        // Алгоритм Флойда-Уоршелла
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (floyd[i][k] == Integer.MAX_VALUE || floyd[k][j] == Integer.MAX_VALUE) {
+                        continue;
+                    }
+                    floyd[i][j] = Math.min(floyd[i][j], floyd[i][k] + floyd[k][j]);
+                }
+            }
+        }
+
+        // Находим город с минимальным количеством доступных городов
+        int minAccessibleCities = n;
+        int cityNumber = -1;
+        for (int city = 0; city < n; city++) {
+            int accessibleCitiesCount = 0;
+            for (int nextCity = 0; nextCity < n; nextCity++) {
+                if (floyd[city][nextCity] <= distanceThreshold) {
+                    accessibleCitiesCount++;
+                }
+            }
+
+            if (accessibleCitiesCount <= minAccessibleCities) {
+                minAccessibleCities = accessibleCitiesCount;
+                cityNumber = city;
+            }
+        }
+        return cityNumber;
+    }
+}

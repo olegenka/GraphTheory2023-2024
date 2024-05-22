@@ -1,0 +1,29 @@
+class Solution {
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        // s - количество комнат
+        int s = rooms.size();
+        // vis - массив, который будет хранить информацию о посещенных комнатах
+        boolean[] vis = new boolean[ s];   
+        // Вызываем рекурсивную функцию dfs для комнаты 0 и проверяем, 
+        // вернул ли она количество комнат равное s
+        return dfs(rooms,0 ,vis)==s;
+       
+
+    }
+    // Рекурсивная функция для обхода комнат в глубину
+    int dfs(List<List<Integer>> rooms, int start ,boolean[] vis)
+    {
+        // Если комната уже посещена, то возвращаем 0
+        if(vis[start])
+        return 0;
+        // Помечаем комнату как посещенную
+         vis[start]=true;
+         int total = 1;
+         // Проходим по ключам, которые мы получили в текущей комнате
+         for (int item : rooms.get(start))
+         // Рекурсивно вызываем dfs для каждой комнаты, ключ к которой мы нашли
+         total += dfs(rooms,item,  vis);
+         // Возвращаем общее количество посещенных комнат
+         return total;
+        }   
+}  
